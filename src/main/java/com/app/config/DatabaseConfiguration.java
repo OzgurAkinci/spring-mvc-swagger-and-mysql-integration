@@ -1,7 +1,6 @@
 package com.app.config;
 
 import com.zaxxer.hikari.HikariDataSource;
-import org.hibernate.SessionFactory;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,14 +10,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.util.Objects;
 import java.util.Properties;
 
 @Configuration
@@ -41,6 +39,7 @@ public class DatabaseConfiguration {
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
         entityManagerFactoryBean.setPackagesToScan("com.app.model");
         entityManagerFactoryBean.setJpaProperties(jpaHibernateProperties());
+        entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         return entityManagerFactoryBean;
     }
 
@@ -60,14 +59,14 @@ public class DatabaseConfiguration {
         ds.setUsername(environment.getRequiredProperty("jdbc.username"));
         ds.setPassword(environment.getRequiredProperty("jdbc.password"));
         ds.setConnectionTestQuery(environment.getRequiredProperty("jdbc.testQuery"));
+        ds.setPoolName(environment.getRequiredProperty("hikari.poolName"));
         ds.setConnectionTimeout(300000);
-        ds.setMaximumPoolSize(300000);
+        ds.setMaximumPoolSize(15);
         return ds;
     }
 
     @Bean(name = "transactionManager")
     public JpaTransactionManager transactionManager() {
-        JpaTransactionManager transactionManager = new JpaTransactionManager(entityManagerFactory().getObject());
-        return transactionManager;
+        return new JpaTransactionManager(Objects.requireNonNull(entityManagerFactory().getObject()));
     }
 }

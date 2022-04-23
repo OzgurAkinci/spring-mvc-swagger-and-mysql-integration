@@ -1,8 +1,10 @@
 package com.app.controller;
 
+import com.app.mapper.ParameterMapper;
 import com.app.model.Parameter;
 import com.app.model.base.BaseResponse;
 import com.app.model.base.ExceptionInfo;
+import com.app.model.dto.ParameterDto;
 import com.app.service.ParameterService;
 import com.app.util.AppUtils;
 import org.slf4j.Logger;
@@ -22,7 +24,7 @@ public class ParameterController {
     ParameterService parameterService;
 
     @GetMapping("/list")
-    public ResponseEntity<?> list() {
+    public ResponseEntity<BaseResponse<List<Parameter>>> list() {
         try{
             List<Parameter> parameters = parameterService.findAll();
             return ResponseEntity.ok(new BaseResponse<>(parameters, true));
@@ -34,8 +36,9 @@ public class ParameterController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<BaseResponse<Parameter>> save(@RequestBody Parameter parameter) {
+    public ResponseEntity<BaseResponse<Parameter>> save(@RequestBody ParameterDto parameterDto) {
         try{
+            Parameter parameter = ParameterMapper.INSTANCE.parameterDtoToParameter(parameterDto);
             Parameter savedRecord =  parameterService.save(parameter);
             return ResponseEntity.ok(new BaseResponse<>(savedRecord, true));
         }catch (Exception e) {
