@@ -2,7 +2,7 @@
 Spring MVC Swagger Api and MySQL Integration
 
 ## Requirements
-> >Java 1.8 and >Tomcat 9.0
+> Java 1.8 or Java 11 and Tomcat 9.0
 
 ## Home Page ScreenShot
 ![Screenshot](https://github.com/OzgurAkinci/spring-mvc-swagger-and-mysql-integration/blob/main/home-page-ss.png?raw=true)
